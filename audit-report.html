@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Audit Report</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- jsPDF + html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #b0e0db;
+      color: #333;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    .button {
+      display: block;
+      width: 90%;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+    .home-button { background: #3498db; }
+    .pdf-button { background: #e74c3c; }
+    .smart-button { background: #9b59b6; }
+    .logout-button {
+      background: #f39c12;
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .chart-container {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    .industry-info {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      background-color: #d8fef2;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .industry-text {
+      max-width: 400px;
+      text-align: left;
+      color: #333;
+      font-size: 15px;
+    }
+    .ai-insights-box {
+      background-color: #fef9e7;
+      border-left: 6px solid #f1c40f;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: left;
+      max-width: 700px;
+      margin: 0 auto 20px auto;
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <button class="logout-button" onclick="logout()">Logout</button>
+
+  <div class="container" id="report-content">
+    <a href="homepage.html" class="button home-button">⬅ Back to Home</a>
+    <h1>*** AUDIT REPORT ***</h1>
+    <p>General power usage breakdown and AI-driven insights</p>
+
+    <h2>Power Usage Breakdown</h2>
+    <div class="chart-container">
+      <canvas id="usageChart"></canvas>
+    </div>
+
+    <h2>Industry Comparison</h2>
+    <div class="industry-info">
+      <div class="chart-container" style="width: 300px;">
+        <canvas id="comparisonChart"></canvas>
+      </div>
+      <div class="industry-text">
+        <h3>Understanding the Comparison</h3>
+        <p>Your organization's energy usage is compared with industry averages. If your usage is higher, consider reviewing peak time consumption and implementing energy-efficient devices or scheduling.</p>
+      </div>
+    </div>
+
+    <h2>AI Analysis & Cost-Saving Tips</h2>
+    <div class="ai-insights-box" id="aiInsights">
+      <strong>AI Suggestion:</strong><br>
+      <p id="dynamicInsights"></p>
+    </div>
+
+    <button onclick="downloadPDF()" class="button pdf-button">📥 Download Report as PDF</button>
+    <a href="smart-recommendations.html" class="button smart-button">💡 Go to Smart Recommendations</a>
+    <a href="https://chat.openai.com/chat" target="_blank" class="button" style="background-color: #f39c12;">💬 Learn More About Energy Efficiency & Cost Saving Tips</a>
+  </div>
+
+  <script>
+    const userName = "User";
+    const readings = JSON.parse(localStorage.getItem('meterReadings')) || {};
+    const userEmail = JSON.parse(localStorage.getItem('loggedInUser'))?.email;
+    const userReadings = readings[userEmail] || [];
+
+    const totalUsage = userReadings.reduce((acc, reading) => acc + reading.reading, 0);
+    const averageUsage = userReadings.length ? (totalUsage / userReadings.length) : 0;
+
+    const months = userReadings.map(reading => reading.date.split(' ')[0]);
+    const usageData = userReadings.map(reading => reading.reading);
+
+    // Bar Chart
+    new Chart(document.getElementById('usageChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'Power Usage (kWh)',
+          data: usageData,
+          backgroundColor: 'rgba(52, 152, 219, 0.6)'
+        }]
+      }
+    });
+
+    // Pie Chart (Comparison)
+    const industryStandard = 400;
+    new Chart(document.getElementById('comparisonChart').getContext('2d'), {
+      type: 'pie',
+      data: {
+        labels: ['Your Usage', 'Industry Standard'],
+        datasets: [{
+          data: [averageUsage, industryStandard],
+          backgroundColor: ['#e74c3c', '#2ecc71']
+        }]
+      }
+    });
+
+    function getUsageRangeTips(usage) {
+      if (usage < 400) {
+        return {
+          message: "Your energy usage is low compared to industry standards.",
+          tips: [
+            'Continue using energy-efficient devices.',
+            'Maintain low consumption patterns to optimize cost savings.',
+            'Consider investing in renewable energy options.'
+          ]
+        };
+      } else if (usage <= 500) {
+        return {
+          message: "Your energy usage is within industry standards.",
+          tips: [
+            'Consider upgrading to more energy-efficient appliances.',
+            'Reschedule non-essential operations to off-peak hours.',
+            'Monitor your usage regularly to stay on track.'
+          ]
+        };
+      } else {
+        return {
+          message: "Your energy usage is above industry standards.",
+          tips: [
+            'Reschedule non-critical operations to off-peak hours.',
+            'Use smart thermostats and motion-sensor lighting.',
+            'Invest in energy-efficient equipment and lighting.'
+          ]
+        };
+      }
+    }
+
+    const { message, tips } = getUsageRangeTips(averageUsage);
+    const dynamicInsights = document.getElementById('dynamicInsights');
+    dynamicInsights.innerHTML = `
+      Hello ${userName},<br>${message}<br>
+      <ul>${tips.map(tip => `<li>${tip}</li>`).join('')}</ul>
+    `;
+
+    // PDF Export
+    async function downloadPDF() {
+      const reportContent = document.getElementById("report-content");
+      const canvas = await html2canvas(reportContent, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save("Audit_Report.pdf");
+    }
+
+    function logout() {
+      window.location.href ='index.html';
+    }
+  </script>
+</body>
+</html>

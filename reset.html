@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reset Password - WattTrack</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e0f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .reset-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      color: #00796b;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background-color: #00796b;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #004d40;
+    }
+
+    a {
+      display: block;
+      margin-top: 15px;
+      text-align: center;
+      color: #00bfae;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="reset-container">
+    <h2>Reset Password</h2>
+    <form id="reset-form">
+      <label for="email">Registered Email:</label>
+      <input type="email" id="email" required>
+
+      <label for="new-password">New Password:</label>
+      <input type="password" id="new-password" required>
+
+      <button type="submit">Reset Password</button>
+    </form>
+    <a href="login.html">Back to Login</a>
+  </div>
+
+  <script>
+    document.getElementById('reset-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const newPassword = document.getElementById('new-password').value;
+
+      let user = JSON.parse(localStorage.getItem(email));
+
+      if (user) {
+        user.password = newPassword;
+        localStorage.setItem(email, JSON.stringify(user));
+        alert('Password reset successfully! Please log in.');
+        window.location.href = 'login.html';
+      } else {
+        alert('Email not found!');
+      }
+    });
+  </script>
+</body>
+</html>

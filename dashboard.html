@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoTrack - Energy Dashboard & Gamification</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  body {
+    background-color: #b2dfdb; /* New backdrop color */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .top-bar {
+  display: flex;
+  justify-content: space-between;  /* This will move buttons to opposite sides */
+  align-items: center;
+  margin-bottom: 20px;  /* Adjusted margin for spacing */
+}
+
+.back-btn {
+  background-color: #2196F3;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+  display: inline-block;
+}
+
+.back-btn:hover {
+  background-color: #1976D2;
+}
+
+.logout-btn {
+  background-color: #2196F3;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+  display: inline-block;
+}
+
+.logout-btn:hover {
+  background-color: #1976D2;
+}
+
+.header {
+  text-align: center;
+  background: linear-gradient(90deg, #2e8b57, #3b9b91);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 24px;
+  margin-bottom: 30px;
+}
+
+/* Dashboard Styling */
+.dashboard {
+  width: 900px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  margin-top: 20px;  /* Added margin-top for spacing */
+}
+
+/* Gamification Section Styling */
+.gamification {
+  width: 900px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+}
+
+  
+  .time-filter {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .time-filter button {
+    background: #bbdefb; /* Light blue */
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  
+  .time-filter button:hover {
+    background: #90caf9;
+  }
+  
+  .time-filter button.active {
+    background: #2e8b57; /* Same green */
+    color: white;
+  }
+  
+  .efficiency-score {
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    color: #2e8b57;
+    margin-top: 20px;
+  }
+  
+  .efficiency-score p {
+    font-size: 16px;
+    color: gray;
+  }
+  
+  .metrics {
+    display: flex;
+    justify-content: space-around;
+    margin: 30px 0;
+  }
+  
+  .metric {
+    text-align: center;
+  }
+  
+  .metric p {
+    font-weight: bold;
+    color: #666;
+  }
+  
+  .metric h3 {
+    font-size: 22px;
+    color: #333;
+  }
+  
+  .metric span {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .positive {
+    color: green;
+  }
+  
+  .negative {
+    color: red;
+  }
+  
+  .chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    height: 300px;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: slideIn 1s forwards;
+  }
+  
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  .tips {
+    background: #eef2f7;
+    padding: 15px 20px;
+    border-radius: 10px;
+  }
+  
+  .tips h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .tips ul {
+    list-style: disc;
+    padding-left: 20px;
+  }
+  
+  .tips li {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  .eco-achievements {
+    width: 900px;
+    background: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.1);
+    margin-top: 40px;
+  }
+  
+  .badge-section {
+    text-align: center;
+    margin-top: 30px;
+  }
+  
+  .badge-section h2 {
+    font-size: 28px;
+    color: #2e8b57;
+    margin-bottom: 20px;
+  }
+  
+  .badge-section p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+  }
+  
+  .badges {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 30px;
+  }
+  
+  .badge {
+    background-color: #dfe7f2;
+    padding: 40px 20px 20px; /* Increased top padding from 20px to 40px */
+    border-radius: 10px;
+    margin: 10px;
+    text-align: center;
+    width: 120px;
+    font-size: 16px;
+    font-weight: bold;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .badge.active {
+    background-color: #2e8b57;
+    color: white;
+  }
+  
+  .stat-boxes {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+  }
+  
+  .stat-box {
+    background-color: #eef2f7;
+    border-radius: 10px;
+    padding: 20px;
+    width: 45%;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .stat-box p {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 10px;
+  }
+  
+  .stat-box h3 {
+    font-size: 24px;
+    color: #2e8b57;
+  }
+  
+  .badge img {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .badge.active img {
+    opacity: 1;
+  }
+  .back-btn {
+  background-color: #2196F3; /* Blue color */
+  color: rgb(180, 224, 222);
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block; /* Changed to inline-block */
+  margin: 30px 0;
+  transition: background 0.3s;
+  text-align: left; /* Align button text to the left */
+}
+
+.back-btn:hover {
+  background-color: #1976D2; /* Darker blue on hover */
+}
+
+  
+  .share-buttons {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    gap: 15px;
+  }
+  
+  .share-buttons button {
+    background: #7e57c2; /* Fun purple */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  
+  .share-buttons button:hover {
+    background: #673ab7;
+  }
+  
+  .tips ul[data-level] {
+    display: none;
+  }
+  
+  .tips ul[data-level].active {
+    display: block;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+</style>  
+</head>
+<body>
+  <div class="top-bar">
+    <a href="homepage.html" class="back-btn">← Back to Home</a>
+    <a href="index.html" class="logout-btn">Logout</a>
+  </div>
+
+  <div class="dashboard">
+    <div class="header">
+      <span>EcoTrack - DASHBOARD</span>
+    </div>
+
+    <div class="time-filter">
+      <button class="active" onclick="filterBy('week')">Week</button>
+      <button  class="active" onclick="filterBy('month')">Month</button>
+      <button  class="active" onclick="filterBy('year')">Year</button>
+    </div>
+
+    <div class="efficiency-score">
+      <span id="efficiencyScore">0</span>
+      <p>Efficiency Score</p>
+    </div>
+    <div class="metrics">
+      <div class="metric score-box">
+        <p>Total Usage</p>
+        <h3 id="totalUsage">0 kWh</h3>
+        <span id="usageTrend" class="positive">+0%</span>
+      </div>
+      <div class="metric score-box">
+        <p>Carbon Footprint</p>
+        <h3 id="carbonFootprint">0 tons</h3>
+        <span class="negative">↓</span>
+      </div>
+      <div class="metric score-box">
+        <p>Cost Savings</p>
+        <h3 id="costSavings">$0.00</h3>
+        <span id="savingsTrend" class="positive">+0%</span>
+      </div>
+    </div>
+    
+   
+
+    <div class="chart-container">
+      <canvas id="energyChart"></canvas>
+    </div>
+
+    <div class="share-buttons">
+      <button onclick="shareProgress()">Share on Instagram</button>
+      <button onclick="shareGeneric()">Copy Summary</button>
+    </div>
+
+    <div class="tips">
+      <h3>Energy Saving Tips</h3>
+      <ul id="tips-low" data-level="low">
+        <li>Unplug electronics when not in use.</li>
+        <li>Limit heater/AC use when possible.</li>
+      </ul>
+      <ul id="tips-mid" data-level="mid">
+        <li>Use energy-efficient appliances.</li>
+        <li>Adjust your thermostat by a few degrees.</li>
+      </ul>
+      <ul id="tips-high" data-level="high">
+        <li>Upgrade insulation and windows.</li>
+        <li>Consider renewable energy sources.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="gamification">
+    <div class="header">
+      <span>EcoTrack - "SustainableStreak"</span>
+    </div>
+    <div class="stat-boxes">
+      <div class="stat-box">
+        <p>Total Points</p>
+        <h3 id="totalPoints">0</h3>
+      </div>
+      <div class="stat-box">
+        <p>Energy-Saving Score</p>
+        <h3 id="energyScore">0</h3>
+      </div>
+    </div>
+    
+
+    <div class="badge-section">
+      <h2>Earn Rewards & Save the Planet! 🌍</h2>
+      <p>Unlock badges by reaching milestones and show off your eco-friendly skills!</p>
+    </div>
+    <div class="badges">
+      <div id="badge-low" class="badge">
+        <img src="greenbadge.jpeg" alt="Low Efficiency" />
+        Eco Explorer - Low Efficiency
+      </div>
+      <div id="badge-mid" class="badge">
+        <img src="eneffbadge.jpeg" alt="Medium Efficiency" />
+        Green Guardian - Medium Efficiency
+      </div>
+      <div id="badge-high" class="badge">
+        <img src="carbonbadge.jpeg" alt="High Efficiency" />
+        Planet Pro - High Efficiency
+      </div>
+    </div>
+    
+    <div class="tips">
+      <ul id="tips-low"><li>Try unplugging unused electronics.</li></ul>
+      <ul id="tips-mid"><li>You're doing well—opt for energy-efficient bulbs!</li></ul>
+      <ul id="tips-high"><li>Great job! Keep sustaining that low usage!</li></ul>
+    </div>
+    </div>
+  </div>
+  <script>
+    let chart;
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    const email = user?.email;
+  
+    function getUserReadings() {
+      const all = JSON.parse(localStorage.getItem("meterReadings")) || {};
+      return all[email] || [];
+    }
+  
+    function filterBy(range) {
+      const now = new Date();
+      let from;
+      if (range === "week") from = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      else if (range === "month") from = new Date(now.setMonth(now.getMonth() - 1));
+      else from = new Date(now.setFullYear(now.getFullYear() - 1));
+  
+      const readings = getUserReadings().filter(reading => {
+        const parts = reading.date.split(" to ");
+        const toDate = new Date(parts[1]);
+        return toDate >= from;
+      });
+  
+      updateDashboard(readings);
+    }
+  
+    function updateDashboard(readings) {
+      const totalUsage = readings.reduce((acc, r) => acc + (parseFloat(r.reading) || 0), 0);
+      const totalCost = readings.reduce((acc, r) => acc + (parseFloat(r.cost) || 0), 0);
+      const carbon = (totalUsage * 0.0005).toFixed(2);
+      const efficiency = Math.max(100 - (totalUsage / 10), 0).toFixed(0);
+      const savings = (totalUsage * 0.12).toFixed(2);
+  
+      document.getElementById("totalUsage").textContent = `${totalUsage.toFixed(2)} kWh`;
+      document.getElementById("carbonFootprint").textContent = `${carbon} tons`;
+      document.getElementById("efficiencyScore").textContent = efficiency;
+      document.getElementById("costSavings").textContent = `$${savings}`;
+  
+      document.getElementById("usageTrend").textContent = totalUsage > 200 ? "-1.5%" : "+2.3%";
+      document.getElementById("usageTrend").className = totalUsage > 200 ? "negative" : "positive";
+      document.getElementById("savingsTrend").textContent = totalUsage > 200 ? "-3.2%" : "+5.0%";
+      document.getElementById("savingsTrend").className = totalUsage > 200 ? "negative" : "positive";
+  
+      if (chart) chart.destroy();
+      const ctx = document.getElementById("energyChart").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: readings.map(r => r.date),
+          datasets: [{
+            label: "Energy Consumption (kWh)",
+            data: readings.map(r => parseFloat(r.reading)),
+            borderColor: "#2e8b57",
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+  
+      displayTipsAndBadges(parseInt(efficiency));
+    }
+  
+    let lastAwardedLevel = null;
+  
+    function displayTipsAndBadges(score) {
+      document.querySelectorAll(".tips ul").forEach(ul => ul.classList.remove("active"));
+      ["badge-low", "badge-mid", "badge-high"].forEach(id => {
+        document.getElementById(id).classList.remove("active");
+      });
+  
+      let level;
+      if (score < 40) level = "low";
+      else if (score <= 70) level = "mid";
+      else level = "high";
+  
+      document.getElementById(`tips-${level}`).classList.add("active");
+      document.getElementById(`badge-${level}`).classList.add("active");
+  
+      lastAwardedLevel = level; // Confetti removed, just track level
+    }
+  
+    function shareProgress() {
+      const message = `Check out my EcoTrack progress! Usage: ${document.getElementById("totalUsage").textContent}, Efficiency Score: ${document.getElementById("efficiencyScore").textContent}`;
+      const instagramURL = `https://www.instagram.com/create/story/?text=${encodeURIComponent(message)}`;
+      window.open(instagramURL, "_blank");
+    }
+  
+    function shareGeneric() {
+      const text = `EcoTrack Summary:\nUsage: ${document.getElementById("totalUsage").textContent}\nEfficiency: ${document.getElementById("efficiencyScore").textContent}`;
+      navigator.clipboard.writeText(text).then(() => alert("Summary copied to clipboard!"));
+    }
+  
+    function goBack() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  
+    window.onload = function () {
+      filterBy("month"); // Default view to last month
+    };
+  </script>
+  
+</body>
+</html>

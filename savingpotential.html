@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Energy Savings Potential</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f1fbf8;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e8f5e9;
+  padding: 1rem;
+  border-bottom: 2px solid #ccc;
+  flex-wrap: wrap; /* Allow wrapping to the next line */
+}
+
+header h1 {
+  font-size: 2.2rem;
+  color: #127044;
+  margin: 0;
+  flex-grow: 1;
+  text-align: left;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: #1e1b1b;
+  margin: 0.5rem 0;
+  text-align: center;
+  width: 100%;
+  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #83c4da, 0 0 40px #f7eaf7; /* Glowing effect */
+  border-bottom: 2px solid #71a7cb; /* Underline with color matching the glow */
+  padding-bottom: 10px; /* Adds space between the text and the underline */
+}
+
+
+.nav-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-grow: 1;
+}
+
+header h3 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #5a2e73;
+  text-align: center;
+  width: 100%;
+  margin-top: 1rem;
+}
+.nav-button {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  background-color: #a5d6a7;
+  color: #000;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+  background-color: #81c784;
+}
+
+/* Glowing effect for Energy Saving Potential (changed to white) */
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 5px white, 0 0 10px white, 0 0 15px white;
+  }
+  50% {
+    text-shadow: 0 0 10px white, 0 0 20px white, 0 0 30px white;
+  }
+  100% {
+    text-shadow: 0 0 5px white, 0 0 10px white, 0 0 15px white;
+  }
+}
+
+    main {
+      padding: 30px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    section {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #00a89d;
+      font-size: 22px;
+    }
+    .overview-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.overview-left {
+  flex: 1;
+  min-width: 300px;
+}
+
+.overview-right {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overview-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+    .overview-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.overview-text {
+  flex: 1;
+}
+
+.overview-image {
+  flex-shrink: 0;
+  max-width: 300px;
+  border-radius: 12px;
+}
+
+    .overview-item {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      margin: 12px 0;
+    }
+
+    .overview-item i {
+      font-size: 20px;
+      color: #00a89d;
+      margin-right: 12px;
+      width: 24px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    ul li {
+      margin-bottom: 10px;
+    }
+
+    canvas {
+      margin-top: 30px;
+      max-width: 100%;
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    #summaryText {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EcoTrack</h1> <!-- "EcoTrack" on the extreme left -->
+    <div class="nav-buttons">
+      <a href="homepage.html" class="nav-button">🏠 Home</a>
+      <a href="index.html" class="nav-button">📊 LogOut</a>
+    </div>
+    <h2>Unlock Your Energy Savings</h2> <!-- This now has a glowing effect -->
+    <h3>SAVE MORE, SPEND LESS</h3> <!-- This is now centered -->
+  </header>
+  
+
+  <main>
+    <section id="overview">
+      <h2>Overview</h2>
+      <div class="overview-container">
+        <!-- Left side: Metrics + Text -->
+        <div class="overview-text">
+          <p>
+            Discover your potential savings through optimized energy usage. Our smart analysis compares your current consumption with efficiency standards to calculate how much you can save monthly and annually.
+          </p>
+    
+          <div class="overview-item"><i class="fas fa-bolt"></i> <strong>Total Monthly Usage:</strong> <span id="currentUsage">--</span> kWh</div>
+          <div class="overview-item"><i class="fas fa-chart-line"></i> <strong>Projected Usage:</strong> <span id="projectedUsage">--</span> kWh</div>
+          <div class="overview-item"><i class="fas fa-percent"></i> <strong>Estimated Savings:</strong> <span id="savingsPercent">--</span>%</div>
+          <div class="overview-item"><i class="fas fa-indian-rupee-sign"></i> <strong>Monthly Cost Reduction:</strong> ₹<span id="costReduction">--</span></div>
+          <div class="overview-item"><i class="fas fa-calendar"></i> <strong>Annual Energy Saved:</strong> <span id="annualSaved">--</span> kWh</div>
+          <div class="overview-item"><i class="fas fa-leaf"></i> <strong>CO₂ Reduction:</strong> <span id="co2Saved">--</span> tons/year</div>
+          <div class="overview-item"><i class="fas fa-thermometer-half"></i> <strong>Consumption Level:</strong> <span id="consumptionLevel">--</span></div>
+        </div>
+    
+        <!-- Right side: Image -->
+        <img src="energysave.jpg" alt="Energy savings illustration" class="overview-image">
+
+      </div>
+    </section>
+    
+    
+    <section>
+      <h2>Personalized Recommendations</h2>
+      <ul id="recommendationList"></ul>
+      <canvas id="comparisonChart"></canvas>
+    </section>
+
+    <section>
+      <h2>Cost Efficiency Over Time</h2>
+      <div id="summaryText">Analyzing your meter data...</div>
+      <canvas id="savingChart" width="800" height="400"></canvas>
+    </section>
+  </main>
+
+  <script>
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const userEmail = loggedInUser?.email;
+    const allReadings = JSON.parse(localStorage.getItem('meterReadings')) || {};
+    const readings = Array.isArray(allReadings) ? allReadings : (allReadings[userEmail] || []);
+
+    const totalUnits = readings.reduce((sum, r) => sum + (r.reading || r.units || 0), 0);
+
+    function calculateBill(units) {
+      let bill = 0;
+      if (units <= 50) bill = units * 1.45;
+      else if (units <= 100) bill = 50 * 1.45 + (units - 50) * 2.6;
+      else if (units <= 200) bill = 50 * 1.45 + 50 * 2.6 + (units - 100) * 3.33;
+      else if (units <= 300) bill = 50 * 1.45 + 50 * 2.6 + 100 * 3.33 + (units - 200) * 4.3;
+      else bill = 50 * 1.45 + 50 * 2.6 + 100 * 3.33 + 100 * 4.3 + (units - 300) * 5.5;
+      return Math.round(bill);
+    }
+
+    if (readings.length === 0) {
+      document.getElementById("summaryText").textContent = "No meter readings available.";
+    } else {
+      const savingsRate = 0.28;
+      const projectedUsage = Math.round(totalUnits * (1 - savingsRate));
+      const costReduction = calculateBill(totalUnits) - calculateBill(projectedUsage);
+      const annualSaved = (totalUnits - projectedUsage) * 12;
+      const co2Reduction = (annualSaved * 0.00043).toFixed(2);
+      const savingsPercent = Math.round(savingsRate * 100);
+
+      let level = 'High';
+      if (totalUnits <= 90) level = 'Low';
+      else if (totalUnits <= 180) level = 'Medium';
+
+      const tips = {
+        Low: [
+          'Keep up the good habits!',
+          'Use natural daylight as much as possible.',
+          'Continue unplugging idle devices.'
+        ],
+        Medium: [
+          'Replace old appliances with energy-efficient models.',
+          'Use fans instead of AC when possible.',
+          'Turn off lights when not in use.'
+        ],
+        High: [
+          'Schedule an energy audit.',
+          'Consider solar panel installation.',
+          'Use smart thermostats and efficient HVAC systems.'
+        ]
+      };
+
+      document.getElementById("currentUsage").textContent = totalUnits;
+      document.getElementById("projectedUsage").textContent = projectedUsage;
+      document.getElementById("savingsPercent").textContent = savingsPercent;
+      document.getElementById("costReduction").textContent = costReduction;
+      document.getElementById("annualSaved").textContent = annualSaved;
+      document.getElementById("co2Saved").textContent = co2Reduction;
+      document.getElementById("consumptionLevel").textContent = level;
+
+      tips[level].forEach(tip => {
+        const li = document.createElement('li');
+        li.textContent = tip;
+        document.getElementById('recommendationList').appendChild(li);
+      });
+
+      // Bar Chart - Category-wise
+      new Chart(document.getElementById('comparisonChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: ['Lighting', 'Heating/Cooling', 'Appliances', 'Electronics', 'Others'],
+          datasets: [
+            {
+              label: 'Current Usage (kWh)',
+              data: [totalUnits * 0.3, totalUnits * 0.25, totalUnits * 0.2, totalUnits * 0.15, totalUnits * 0.1],
+              backgroundColor: '#00a89d'
+            },
+            {
+              label: 'Projected Usage (kWh)',
+              data: [projectedUsage * 0.3, projectedUsage * 0.25, projectedUsage * 0.2, projectedUsage * 0.15, projectedUsage * 0.1],
+              backgroundColor: '#7fdbff'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Current vs Projected Energy Usage by Category' }
+          }
+        }
+      });
+
+      // Line Chart - Cost comparison over time
+      const labels = [], currentCosts = [], optimalCosts = [];
+      let totalSaved = 0;
+      const optimalRate = 4;
+
+      readings.forEach(r => {
+        const units = r.reading || r.units || 0;
+        const actualCost = units * (r.rate || 0);
+        const optimalCost = units * optimalRate;
+        labels.push(r.date || 'N/A');
+        currentCosts.push(actualCost.toFixed(2));
+        optimalCosts.push(optimalCost.toFixed(2));
+        if (actualCost - optimalCost > 0) totalSaved += actualCost - optimalCost;
+      });
+
+      document.getElementById("summaryText").textContent = `You could have saved approximately ₹${totalSaved.toFixed(2)} using optimal rates.`;
+
+      new Chart(document.getElementById('savingChart').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Your Actual Cost (₹)', data: currentCosts, borderColor: '#e74c3c', fill: false },
+            { label: 'Optimal Cost (₹)', data: optimalCosts, borderColor: '#27ae60', fill: false }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Actual vs Optimal Electricity Cost' }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

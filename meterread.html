@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utility Meter Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #c9f4e9; /* Light green background */
+            color: white;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: rgba(185, 108, 108, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        header h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .nav-button {
+            background: #2980b9;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .nav-button:hover {
+            background: #1c5980;
+        }
+        /* New class for login button */
+        .nav a.login {
+            background-color: #cbede3; /* Light green color */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .nav a.login:hover {
+            background-color: #c9d1cf; /* Slightly darker shade for hover */
+        }
+        .section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+        input, button {
+            width: 90%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        input {
+            background: white;
+            color: black;
+        }
+        button {
+            background: #6b6b9b;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #40246e;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            text-align: left;
+        }
+        .input-chart-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .input-area, .chart-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        .chart-container {
+            height: 300px;
+        }
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .audit-button {
+            margin-top: 20px;
+            width: 95%;
+            padding: 12px;
+            font-size: 18px;
+            background: #515ada;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .audit-button:hover {
+            background: #ca6f1e;
+        }
+        
+        /* Dark colored box for the title */
+        .title-box {
+            background-color: #1c5b59; /* Dark color */
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        /* Edit and delete buttons style */
+        .history-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .history-item .edit-btn, .history-item .delete-btn {
+            font-size: 0.8em;
+            padding: 5px 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .history-item .edit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+
+        .history-item .delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+
+        .history-item .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="title-box">⚡ Utility Meter Tracker</div>
+            <div class="nav-buttons">
+                <a href="homepage.html" class="nav-button">🏠 Home</a>
+                <a href="index.html" class="nav-button">🚪 Logout</a>
+            </div>
+        </header>
+
+        <div class="section input-chart-container">
+            <div class="input-area">
+                <h2>Enter Meter Reading</h2>
+                <input type="number" id="readingInput" placeholder="Enter reading..." required>
+                <input type="number" id="rateInput" placeholder="Rate per kWh..." required>
+                <input type="text" id="noteInput" placeholder="Enter notes (optional)">
+                
+                <!-- Added From and To date labels and time input -->
+                <label for="dateFrom">Date From:</label>
+                <input type="date" id="dateFrom" required>
+                <input type="time" id="timeFrom" required>
+
+                <label for="dateTo">Date To:</label>
+                <input type="date" id="dateTo" required>
+                <input type="time" id="timeTo" required>
+
+                <button onclick="addReading()">Submit</button>
+            </div>
+
+            <div class="chart-container">
+                <h2>Usage Trend</h2>
+                <canvas id="usageChart"></canvas>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2>Reading History</h2>
+            <ul id="historyList">No readings added yet.</ul>
+        </section>
+
+        <a href="audit-report.html" class="audit-button">📊 Go to Audit Report</a>
+    </div>
+
+    <script>
+        let chart;
+        let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        let userEmail = loggedInUser?.email;
+    
+        // Function to get user readings from localStorage by their email
+        function getUserReadings() {
+            const allReadings = JSON.parse(localStorage.getItem('meterReadings')) || {};
+            return allReadings[userEmail] || [];
+        }
+    
+        // Function to save user readings to localStorage
+        function saveUserReadings(readings) {
+            const allReadings = JSON.parse(localStorage.getItem('meterReadings')) || {};
+            allReadings[userEmail] = readings;
+            localStorage.setItem('meterReadings', JSON.stringify(allReadings));
+        }
+    
+        // Function to add a new reading
+        function addReading() {
+            const readingInput = document.getElementById('readingInput').value;
+            const rateInput = document.getElementById('rateInput').value;
+            const noteInput = document.getElementById('noteInput').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const timeFrom = document.getElementById('timeFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const timeTo = document.getElementById('timeTo').value;
+    
+            if (!readingInput || !rateInput || !dateFrom || !timeFrom || !dateTo || !timeTo) {
+                alert('Please fill all the fields!');
+                return;
+            }
+    
+            const displayDate = `${dateFrom} ${timeFrom} to ${dateTo} ${timeTo}`;
+            const cost = (parseFloat(readingInput) * parseFloat(rateInput)).toFixed(2);
+    
+            const newReading = {
+  date: `${dateFrom} ${timeFrom} to ${dateTo} ${timeTo}`,
+  reading: parseFloat(readingInput),
+  rate: parseFloat(rateInput),
+  cost: (parseFloat(readingInput) * parseFloat(rateInput)).toFixed(2),
+  notes: noteInput || 'No notes'
+};
+
+    
+            let readings = getUserReadings();
+            readings.push(newReading);
+            saveUserReadings(readings);
+    
+            updateHistory();
+            updateChart();
+    
+            // Clear inputs after submission
+            document.getElementById('readingInput').value = '';
+            document.getElementById('rateInput').value = '';
+            document.getElementById('noteInput').value = '';
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('timeFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            document.getElementById('timeTo').value = '';
+        }
+    
+        // Function to update the history list and show edit/delete buttons
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            const readings = getUserReadings();
+            historyList.innerHTML = '';
+    
+            if (readings.length === 0) {
+                historyList.innerHTML = 'No readings added yet.';
+                return;
+            }
+    
+            readings.slice().reverse().forEach((reading, index) => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('history-item');
+                listItem.innerHTML = `
+                    <strong>${reading.date}</strong>: ${reading.reading} kWh at ₹${reading.rate}/kWh - Total: ₹${reading.cost} - ${reading.notes}
+                    <div class="button-container">
+                        <button class="edit-btn" onclick="editReading(${index})">
+                            <i class="fas fa-pencil-alt"></i> Edit Reading
+                        </button>
+                        <button class="delete-btn" onclick="deleteReading(${index})">
+                            <i class="fas fa-trash-alt"></i> Delete Reading
+                        </button>
+                    </div>
+                `;
+                historyList.appendChild(listItem);
+            });
+        }
+    
+        // Function to edit a reading
+        function editReading(index) {
+            const readings = getUserReadings();
+            const reading = readings[index];
+            document.getElementById('readingInput').value = reading.reading;
+            document.getElementById('rateInput').value = reading.rate;
+            document.getElementById('noteInput').value = reading.notes;
+        }
+    
+        // Function to delete a reading
+        function deleteReading(index) {
+            let readings = getUserReadings();
+            readings.splice(index, 1);
+            saveUserReadings(readings);
+            updateHistory();
+            updateChart();
+        }
+    
+        // Function to update chart
+        function updateChart() {
+            const readings = getUserReadings();
+            if (chart) chart.destroy();
+    
+            const labels = readings.map(reading => reading.date);
+            const data = readings.map(reading => reading.reading);
+    
+            const ctx = document.getElementById('usageChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Meter Reading (kWh)',
+                        data: data,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 6
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    
+        // Initial setup
+        updateHistory();
+        updateChart();
+    </script>
+</body>
+</html>
